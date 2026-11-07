@@ -93,7 +93,8 @@
         "Возвращение на зов и работа без поводка",
         "Передача владельцу, инструкция и занятие по закреплению"
       ],
-      "perDay": true
+      "perDay": true,
+      "image": "/assets/img/photos/trenirovka-ploshchadka.jpg"
     },
     {
       "slug": "korrekciya-povedeniya",
@@ -121,7 +122,8 @@
         "Отработка упражнений на занятиях",
         "Закрепление дома и на прогулках",
         "Итоговая встреча и план дальше"
-      ]
+      ],
+      "image": "/assets/img/photos/ovcharka-park.jpg"
     }
   ]
 }

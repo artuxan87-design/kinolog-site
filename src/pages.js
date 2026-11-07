@@ -100,7 +100,7 @@ ${o.body}
   <div class="wrap foot-in">
     <div>
       <div class="logo">${LOGO}<span class="logo-t">${esc(brandOf(d))}<small>${esc(site.name)}</small></span></div>
-      <p class="muted">${esc(site.role)}</p>
+      ${(site.trainer && site.trainer.avatar) ? `<div class="foot-who"><img src="${esc(site.trainer.avatar)}" alt="${esc(site.name)}, кинолог" width="56" height="56" loading="lazy"><p class="muted">${esc(site.role)}</p></div>` : `<p class="muted">${esc(site.role)}</p>`}
     </div>
     <div class="foot-links">
       ${NAV.map(([h, t]) => `<a href="/${h}">${t}</a>`).join('')}
@@ -125,8 +125,9 @@ ${o.body}
 
 // ---------- Общие блоки ----------
 const HEROART = '<svg class="cover heroart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Иллюстрация: линия связи человека и собаки"><defs><linearGradient id="ha" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9efe6"/><stop offset="1" stop-color="#cfdccb"/></linearGradient></defs><rect width="400" height="300" fill="url(#ha)"/><circle cx="310" cy="70" r="46" fill="#f3d9b8" opacity=".75"/><path d="M0 230c60-30 120-10 190-24s130-30 210 6v88H0z" fill="#4a6b53" opacity=".35"/><path d="M0 255c80-24 150 0 230-12 70-10 120-8 170 6v51H0z" fill="#2d4233" opacity=".55"/><circle cx="110" cy="105" r="14" fill="#d4a373"/><path d="M110 125c0 52 24 80 66 80 36 0 46-34 74-34s38-24 38-50l16-44-34 16c-18-16-44-16-60 0" fill="none" stroke="#2d4233" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const thumb = src => /^\/assets\/img\/photos\/[\w-]+\.jpg$/.test(src || '') && !/-s\.jpg$/.test(src) ? src.replace(/\.jpg$/, '-s.jpg') : src;
 const imgOrCover = (src, alt, type, acc, ic, cls = '') => src
-  ? `<img class="photo ${cls}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async">`
+  ? `<img class="photo ${cls}" src="${esc(thumb(src))}" alt="${esc(alt)}" loading="lazy" decoding="async">`
   : V.cover(type || 'dog', acc || 'teal', ic || 'paw');
 
 function svcCard(s) {
@@ -154,7 +155,7 @@ function courseCard(i) {
 
 function postCard(p) {
   return `<a class="card post-card" href="/blog/${esc(p.slug)}/">
-    ${p.cover ? `<div class="card-img"><img class="photo" src="${esc(p.cover)}" alt="${esc(p.title)}" loading="lazy" decoding="async"></div>` : `<div class="card-img acc-teal">${V.cover('dog', 'teal', 'book')}<span class="card-ico">${icon('book', 22)}</span></div>`}
+    ${p.cover ? `<div class="card-img"><img class="photo" src="${esc(thumb(p.cover))}" alt="${esc(p.title)}" loading="lazy" decoding="async"></div>` : `<div class="card-img acc-teal">${V.cover('dog', 'teal', 'book')}<span class="card-ico">${icon('book', 22)}</span></div>`}
     <div class="card-top"><span class="muted small">${esc(dateRu(p.date))}</span></div>
     <h3>${esc(p.title)}</h3><p>${esc(p.excerpt || R.plain(p.body, 140))}</p>
   </a>`;
