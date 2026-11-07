@@ -51,7 +51,9 @@ function missing(d, store, paySettings) {
 
 const cityIn = d => (d.site.seo && d.site.seo.cityIn) || (d.site.contacts.city ? 'в городе ' + d.site.contacts.city : '');
 // Фирменный знак: одна непрерывная линия соединяет человека и собаку
-const LOGO = '<svg class="logo-svg" viewBox="0 0 40 40" width="38" height="38" aria-hidden="true" focusable="false"><rect width="40" height="40" rx="11" fill="#2d4233"/><circle cx="11" cy="12" r="3" fill="#d4a373"/><path d="M11 17c0 9 3 12 8 12 4 0 5-4 8-4s4-3 4-6l2-6-4 2c-2-2-5-2-7 0" fill="none" stroke="#f7f8f5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const LOGO = '<img class="logo-img" src="/assets/img/logo-mark.png" alt="" width="40" height="40">';
+const HERO_IMG = '/assets/img/hero-kinolog.jpg', HERO_IMG_S = '/assets/img/hero-kinolog-800.jpg';
+const brandOf = d => (d.site.brand !== undefined && d.site.brand !== '') ? d.site.brand : 'Кинология & Баланс';
 const initials = n => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'К';
 
 const NAV = [['services/', 'Услуги и цены'], ['courses/', 'Курсы'], ['blog/', 'Блог'], ['about/', 'О кинологе'], ['partners/', 'Партнёрам']];
@@ -75,14 +77,15 @@ ${headTags}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/favicon.png">
 ${S.metrika(seo.metrikaId)}
 </head>
 <body>
 <a class="skip" href="#main">К содержимому</a>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="/">${LOGO}<span>${esc(site.name)}</span></a>
+    <a class="logo" href="/">${LOGO}<span class="logo-t">${esc(brandOf(d))}<small>${esc(site.name)}</small></span></a>
     <button class="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span></button>
     <nav class="nav" aria-label="Основное меню">
       ${NAV.map(([h, t]) => `<a href="/${h}"${active === h ? ' aria-current="page"' : ''}>${t}</a>`).join('')}
@@ -96,7 +99,7 @@ ${o.body}
 <footer class="foot">
   <div class="wrap foot-in">
     <div>
-      <div class="logo">${LOGO}<span>${esc(site.name)}</span></div>
+      <div class="logo">${LOGO}<span class="logo-t">${esc(brandOf(d))}<small>${esc(site.name)}</small></span></div>
       <p class="muted">${esc(site.role)}</p>
     </div>
     <div class="foot-links">
@@ -209,6 +212,7 @@ function home(d) {
   const posts = d.posts.slice(0, 3);
   const faqs = d.sol.base.faq || [];
   const hero = site.hero || {}, problems = site.problems || [];
+  const heroImg = hero.image || HERO_IMG;
   const heroFacts = (hero.facts && hero.facts.length) ? hero.facts : [];
   const minPrice = d.srv.items.filter(s => s.price != null).map(s => s.price).sort((a, b) => a - b)[0];
   return layout(d, {
@@ -223,7 +227,7 @@ function home(d) {
       ${hero.note ? `<p class="micro">${esc(hero.note)}</p>` : ''}
       <ul class="facts">${heroFacts.map(f => `<li><b>${esc(f.value)}</b>${esc(f.label)}</li>`).join('')}</ul>
     </div>
-    <div class="hero-photo${t.photo ? '' : ' noimg'}">${t.photo ? `<img class="photo" src="${esc(t.photo)}" alt="${esc(site.name)}, кинолог ${esc(site.contacts.city || '')}" width="520" height="620" fetchpriority="high">` : HEROART}</div>
+    <div class="hero-photo${heroImg ? ' has-img' : ' noimg'}">${heroImg ? `<img class="photo" src="${esc(heroImg)}"${heroImg === HERO_IMG ? ` srcset="${HERO_IMG_S} 800w, ${HERO_IMG} 1600w" sizes="(max-width:860px) 100vw, 560px"` : ''} alt="${esc(hero.alt || 'Кинолог занимается с собакой в парке')}" width="1600" height="893" fetchpriority="high">` : HEROART}</div>
   </div>
 </section>
 

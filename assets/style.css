@@ -294,3 +294,10 @@ input,select,textarea{background:#fff;border-color:#cfd6c8}
   .hero-photo .photo{height:100%;object-fit:cover}
   h1{font-size:clamp(1.65rem,7vw,2.1rem)}
 }
+.logo-img{width:40px;height:40px;object-fit:contain;flex:none}
+.logo-t{display:grid;line-height:1.15;font-weight:800;color:var(--brand-d)}.logo-t small{font-weight:500;font-size:.72rem;color:var(--muted)}
+.hero-photo.has-img{aspect-ratio:4/3;max-width:none}
+.hero-photo.has-img .photo{width:100%;height:100%;object-fit:cover;object-position:62% 50%;display:block}
+@media (min-width:861px){.hero-in{grid-template-columns:1fr 1.05fr}}
+@media (max-width:860px){.hero-photo.has-img{aspect-ratio:3/2;max-height:260px}.hero-photo.has-img .photo{object-position:60% 50%}.logo-t small{display:none}}
+a.btn{color:#fff}a.btn-ghost{color:var(--brand-d)}a.btn-ghost:hover{color:#fff}a.btn-sand,a.btn-light,a.btn-sand:hover,a.btn-light:hover{color:#212529}
