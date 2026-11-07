@@ -1,0 +1,18 @@
+# Блюпринт для Render: демо сайта кинолога. Бесплатный тариф: сервис засыпает без посетителей,
+# база и загруженные фото стираются при перезапуске. Боевой сайт: VPS в РФ (deploy/, docs/ПУБЛИКАЦИЯ.md).
+services:
+  - type: web
+    name: kinolog-site-demo
+    runtime: node
+    plan: free
+    buildCommand: echo ok
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
