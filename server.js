@@ -175,6 +175,8 @@ function createApp({ dataFile = process.env.DATA_FILE || path.join(ROOT, 'data',
     }
 
     if (req.method === 'POST' && p === '/contact') {
+      const extra = [body.breed && 'Порода и возраст: ' + String(body.breed).slice(0, 100), body.task && 'Задача: ' + String(body.task).slice(0, 100)].filter(Boolean);
+      if (extra.length) body.text = (extra.join('. ') + '. ' + (body.text || '')).trim();
       const r = store.addLead({ ...body, cookieCode: refCookie, ip });
       if (r.errors) return send(400, P.contactPage(d, { errs: r.errors, form: body, ref: refCookie }));
       return page(P.thanksPage(d, r.lead));

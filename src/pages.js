@@ -22,7 +22,7 @@ function files() { return { site: read('site.json'), solutions: read('solutions.
 
 function load(store) {
   const base = read('solutions.json');
-  return { settings: store.s, site: { ...store.c.site, steps: files().site.steps }, sol: { categories: base.categories, base: base.base, items: store.c.solutions }, srv: { items: store.c.services }, cases: { items: store.c.cases }, posts: store.publishedPosts(), allPosts: store.c.posts || [] };
+  return { settings: store.s, site: { ...store.c.site, steps: (store.c.site.steps && store.c.site.steps.length ? store.c.site.steps : files().site.steps) }, sol: { categories: base.categories, base: base.base, items: store.c.solutions }, srv: { items: store.c.services }, cases: { items: store.c.cases }, posts: store.publishedPosts(), allPosts: store.c.posts || [] };
 }
 
 // Что владельцу осталось заполнить: список {text, href}
@@ -50,6 +50,8 @@ function missing(d, store, paySettings) {
 }
 
 const cityIn = d => (d.site.seo && d.site.seo.cityIn) || (d.site.contacts.city ? 'в городе ' + d.site.contacts.city : '');
+// Фирменный знак: одна непрерывная линия соединяет человека и собаку
+const LOGO = '<svg class="logo-svg" viewBox="0 0 40 40" width="38" height="38" aria-hidden="true" focusable="false"><rect width="40" height="40" rx="11" fill="#2d4233"/><circle cx="11" cy="12" r="3" fill="#d4a373"/><path d="M11 17c0 9 3 12 8 12 4 0 5-4 8-4s4-3 4-6l2-6-4 2c-2-2-5-2-7 0" fill="none" stroke="#f7f8f5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const initials = n => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'К';
 
 const NAV = [['services/', 'Услуги и цены'], ['courses/', 'Курсы'], ['blog/', 'Блог'], ['about/', 'О кинологе'], ['partners/', 'Партнёрам']];
@@ -80,7 +82,7 @@ ${S.metrika(seo.metrikaId)}
 <a class="skip" href="#main">К содержимому</a>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="/"><span class="logo-mark">${esc(initials(site.name))}</span><span>${esc(site.name)}</span></a>
+    <a class="logo" href="/">${LOGO}<span>${esc(site.name)}</span></a>
     <button class="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span></button>
     <nav class="nav" aria-label="Основное меню">
       ${NAV.map(([h, t]) => `<a href="/${h}"${active === h ? ' aria-current="page"' : ''}>${t}</a>`).join('')}
@@ -94,7 +96,7 @@ ${o.body}
 <footer class="foot">
   <div class="wrap foot-in">
     <div>
-      <div class="logo"><span class="logo-mark">${esc(initials(site.name))}</span><span>${esc(site.name)}</span></div>
+      <div class="logo">${LOGO}<span>${esc(site.name)}</span></div>
       <p class="muted">${esc(site.role)}</p>
     </div>
     <div class="foot-links">
@@ -119,6 +121,7 @@ ${o.body}
 }
 
 // ---------- Общие блоки ----------
+const HEROART = '<svg class="cover heroart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Иллюстрация: линия связи человека и собаки"><defs><linearGradient id="ha" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9efe6"/><stop offset="1" stop-color="#cfdccb"/></linearGradient></defs><rect width="400" height="300" fill="url(#ha)"/><circle cx="310" cy="70" r="46" fill="#f3d9b8" opacity=".75"/><path d="M0 230c60-30 120-10 190-24s130-30 210 6v88H0z" fill="#4a6b53" opacity=".35"/><path d="M0 255c80-24 150 0 230-12 70-10 120-8 170 6v51H0z" fill="#2d4233" opacity=".55"/><circle cx="110" cy="105" r="14" fill="#d4a373"/><path d="M110 125c0 52 24 80 66 80 36 0 46-34 74-34s38-24 38-50l16-44-34 16c-18-16-44-16-60 0" fill="none" stroke="#2d4233" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const imgOrCover = (src, alt, type, acc, ic, cls = '') => src
   ? `<img class="photo ${cls}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async">`
   : V.cover(type || 'dog', acc || 'teal', ic || 'paw');
@@ -157,9 +160,16 @@ function postCard(p) {
 function crumbs(items) { return `<p class="crumbs">${items.map(([t, h]) => h ? `<a href="${h}">${esc(t)}</a>` : esc(t)).join(' / ')}</p>`; }
 
 function cta(d) {
-  return `<section class="sec"><div class="wrap"><div class="cta">
-    <div><h2>Расскажите о вашей собаке</h2><p>Оставьте заявку: перезвоню, расспрошу о собаке и предложу формат занятий. Первая консультация по телефону бесплатная.</p></div>
-    <a class="btn btn-light" href="/contact/">Записаться</a>
+  return `<section class="sec" id="zayavka"><div class="wrap"><div class="cta cta-form">
+    <div><h2>Расскажите о вашей собаке</h2><p>Напишите, что беспокоит. Перезвоню в течение рабочего дня и предложу формат занятий.</p></div>
+    <form class="form" method="post" action="/contact">
+      <label>Порода и возраст питомца<input name="breed" maxlength="100" autocomplete="off"></label>
+      <label>Главная задача<select name="task"><option value="">Выберите</option><option>Тянет поводок</option><option>Страх или агрессия</option><option>Базовое послушание</option><option>Лает или портит вещи дома</option><option>Щенок</option><option>Другое</option></select></label>
+      <label>Как к вам обращаться<input name="name" required autocomplete="name"></label>
+      <label>Контактный телефон или Telegram<input name="contact" required autocomplete="tel"></label>
+      <label class="check"><input type="checkbox" name="consent" value="1" required> <span>Согласен на обработку персональных данных по <a href="/privacy/" target="_blank">политике</a></span></label>
+      <button class="btn btn-sand" type="submit">Отправить заявку на разбор</button>
+    </form>
   </div></div></section>`;
 }
 
@@ -198,28 +208,35 @@ function home(d) {
   const k = d.cases.items.filter(x => x.public).slice(0, 2);
   const posts = d.posts.slice(0, 3);
   const faqs = d.sol.base.faq || [];
+  const hero = site.hero || {}, problems = site.problems || [];
+  const heroFacts = (hero.facts && hero.facts.length) ? hero.facts : [];
   const minPrice = d.srv.items.filter(s => s.price != null).map(s => s.price).sort((a, b) => a - b)[0];
   return layout(d, {
     path: '/', active: '', desc: seo.description, body: `
 <section class="hero">
   <div class="wrap hero-in">
     <div>
-      <p class="eyebrow">${esc(site.contacts.city || '')}${site.contacts.city && t.experience ? ' · ' : ''}${esc(t.experience ? 'Опыт ' + t.experience.toLowerCase() : '')}</p>
-      <h1>${esc(site.role)}</h1>
-      <p class="lead">${esc(site.tagline)}</p>
-      <div class="actions"><a class="btn" href="/contact/">Записаться на консультацию</a><a class="btn btn-ghost" href="/services/">Услуги и цены</a></div>
-      <ul class="facts">
-        ${(t.credentials || []).slice(0, 2).map(x => `<li>${icon('award', 18)} ${esc(x)}</li>`).join('')}
-        ${minPrice != null ? `<li>${icon('wallet', 18)} Занятия от ${rubK(minPrice)}</li>` : ''}
-      </ul>
+      ${hero.badge ? `<p class="status"><i></i>${esc(hero.badge)}</p>` : ''}
+      <h1>${esc(hero.title || site.role)}</h1>
+      <p class="lead">${esc(hero.lead || site.tagline)}</p>
+      <div class="actions"><a class="btn btn-sand" href="#zayavka">${esc(hero.cta || 'Записаться')}</a><a class="btn btn-ghost" href="/services/">Услуги и цены</a></div>
+      ${hero.note ? `<p class="micro">${esc(hero.note)}</p>` : ''}
+      <ul class="facts">${heroFacts.map(f => `<li><b>${esc(f.value)}</b>${esc(f.label)}</li>`).join('')}</ul>
     </div>
-    <div class="hero-photo acc-teal${t.photo ? '' : ' noimg'}">${t.photo ? `<img class="photo" src="${esc(t.photo)}" alt="${esc(site.name)}, кинолог ${esc(site.contacts.city || '')}" width="520" height="620" fetchpriority="high">` : V.cover('dog', 'teal', 'paw')}</div>
+    <div class="hero-photo${t.photo ? '' : ' noimg'}">${t.photo ? `<img class="photo" src="${esc(t.photo)}" alt="${esc(site.name)}, кинолог ${esc(site.contacts.city || '')}" width="520" height="620" fetchpriority="high">` : HEROART}</div>
+  </div>
+</section>
+
+<section class="sec tight">
+  <div class="wrap">
+    <h2>С какими проблемами обращаются</h2>
+    <div class="grid4">${problems.map(x => `<div class="point">${ibadge(x.icon || 'paw', 'teal', 24)}<h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></div>`).join('')}</div>
   </div>
 </section>
 
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head"><h2>Услуги и цены</h2><a href="/services/">Все услуги →</a></div>
+    <div class="sec-head"><h2>Форматы работы и стоимость</h2><a href="/services/">Все услуги →</a></div>
     <div class="grid">${d.srv.items.map(svcCard).join('')}</div>
   </div>
 </section>
@@ -233,7 +250,7 @@ function home(d) {
 
 <section class="sec">
   <div class="wrap">
-    <h2>Как проходит работа</h2>
+    <h2>Как строится работа</h2>
     <ol class="steps">${site.steps.map(s => `<li><span class="step-ico">${icon(s.icon || 'check', 22)}</span><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p></li>`).join('')}</ol>
   </div>
 </section>

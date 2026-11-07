@@ -178,3 +178,20 @@ test('все иконки и обложки из контента существ
   for (const s of f.site.steps) assert.ok(V.ICONS[s.icon]);
   for (const s of f.solutions.base.partnerFlow) assert.ok(V.ICONS[s.icon]);
 });
+
+test('главная: новый первый экран, проблемы, форматы; поля правятся и заявка собирает породу и задачу', async () => {
+  const { server, store } = createApp({ dataFile: null, config: { port: 0, adminPassword: 'x', secret: 's' } });
+  await new Promise(r => server.listen(0, r));
+  const c = client(server.address().port);
+  try {
+    let t = (await c('GET', '/')).text;
+    assert.match(t, /С какими проблемами обращаются/); assert.match(t, /Экспресс-диагностика/); assert.match(t, /Расскажите о вашей собаке/);
+    assert.doesNotMatch(t, /100 ?% гуманно|Бесплатно проконсультирую|80 ?%/);
+    assert.deepEqual(store.saveSite({ name: 'Владимир', role: 'Кинолог', heroTitle: 'Свой заголовок', heroBadge: '', problems: 'Лает | Разбираем причину', steps: 'Один | Текст' }), []);
+    t = (await c('GET', '/')).text;
+    assert.match(t, /Свой заголовок/); assert.doesNotMatch(t, /class="status"/); assert.match(t, /Лает/);
+    const r = await c('POST', '/contact', { name: 'Анна', contact: '+79001112233', breed: 'Лабрадор, 2 года', task: 'Тянет поводок', consent: '1' });
+    assert.equal(r.status, 200);
+    assert.match(store.d.leads[store.d.leads.length - 1].text, /Лабрадор, 2 года.*Тянет поводок/);
+  } finally { server.close(); }
+});

@@ -22,6 +22,13 @@ ${inp('Имя или название', 'name', s.name)}${inp('Чем заним
 ${inp('Домен сайта', 'domain', s.domain, { ph: 'example.ru', hint: 'Без http:// и слэшей. Пока домен пустой, сайт закрыт от поисковиков. Укажите домен, когда сайт готов к запуску.' })}
 <h3>Контакты</h3>
 ${inp('Телефон', 'phone', c.phone)}${inp('Telegram', 'telegram', c.telegram, { ph: 'ivan_ivanov', hint: 'Только имя пользователя' })}${inp('WhatsApp', 'whatsappPhone', c.whatsappPhone, { ph: '79001234567', hint: 'Номер с кодом страны, цифрами' })}${inp('E-mail', 'email', c.email)}${inp('Город', 'city', c.city)}
+<h3>Первый экран</h3>
+<p class="muted small">Пишите только то, что подтверждено. Формулировки про метод работы («гуманно», «без рывков и криков») и условия («бесплатная консультация», доля времени с владельцем) ставьте после согласования с кинологом.</p>
+${inp('Статус над заголовком', 'heroBadge', (s.hero || {}).badge, { hint: 'Пусто: не показывается.' })}${inp('Заголовок', 'heroTitle', (s.hero || {}).title)}${inp('Подзаголовок', 'heroLead', (s.hero || {}).lead, { textarea: 1, rows: 3 })}
+${inp('Текст кнопки', 'heroCta', (s.hero || {}).cta)}${inp('Текст под кнопкой', 'heroNote', (s.hero || {}).note)}
+${inp('Три факта: «значение | подпись», каждый с новой строки', 'heroFacts', ((s.hero || {}).facts || []).map(f => f.value + ' | ' + f.label).join('\n'), { textarea: 1, rows: 3 })}
+${inp('С какими проблемами обращаются: «заголовок | текст», до 8 строк', 'problems', (s.problems || []).map(x => x.title + ' | ' + x.text).join('\n'), { textarea: 1, rows: 5 })}
+${inp('Как строится работа: «заголовок | текст», до 8 строк', 'steps', (s.steps || []).map(x => x.title + ' | ' + x.text).join('\n'), { textarea: 1, rows: 5 })}
 <h3>О кинологе</h3>
 ${inp('Имя на странице «О кинологе»', 'trainerName', t.name)}${inp('Опыт', 'experience', t.experience, { ph: 'Более 20 лет' })}
 ${imgField('Фото кинолога', 'trainerPhoto', t.photo, 'Лучше вертикальное фото, лицо крупно.')}
